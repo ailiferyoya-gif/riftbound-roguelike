@@ -79,7 +79,9 @@
       {id:'lastveil',name:'最後のヴェイル',desc:'全ての敵の影を束ねた、深度の終端。',image:'boss-astral.png',hp:500,atk:[28,42],reward:500,intent:'終端の宣告'}
     ];
     const EVENTS=Array.from({length:12},(_,i)=>({copy:['祠は過去の旅人が置いていった記憶を燃やしている。何を差し出す？','沼の雨が一滴だけ止まった。止まった場所には、別の未来が映っている。','硝子の祭壇が、あなたの次の一撃を値踏みしている。','冠の影が、まだ知らない名前を呼んでいる。'][i%4],choices:[{id:'memory',icon:'♥',title:['記憶を預ける','雨を飲む','祭壇に触れる','名前を返す'][i%4],detail:'HP18回復、MP全回復'},{id:'deal',icon:'●',title:['未来を買う','雨を売る','力を借りる','影と取引する'][i%4],detail:'HP8を失い、ゴールド+70'}]}));
+    EVENTS.push(...Array.from({length:28},(_,i)=>({...EVENTS[i%12],id:'event-'+(i+13)})));
     const DEPTH_RULES=['標準規則','敵は初手に守りを得る','休息の回復量-25%','エリート出現率上昇','通常攻撃の次に敵が強化','イベントの代償+4HP','遺物候補が呪われる'];
+    DEPTH_RULES.push(...Array.from({length:13},(_,i)=>['敵のHP+12%','敵の攻撃+8%','MP回復量-2','ポーション効果-20%','エリート報酬+30%','ボスが2段階行動','遺物候補+1','敵が反撃を得る','休息で最大HP-2','戦闘報酬が呪物化','通常攻撃が敵の守りを削る','イベント報酬+25%','全敵に新しい予告'][i]));
     const CURSED_ITEMS=Array.from({length:20},(_,i)=>({id:'curse-'+(i+1),name:'呪物 '+String(i+1).padStart(2,'0'),desc:['最大HP-8、攻撃力+10','MP上限-4、ゴールド+35%','毎戦闘の初手に守り-10'][i%3]}));
     const ACHIEVEMENTS=Array.from({length:100},(_,i)=>({id:'achievement-'+(i+1),name:['最初の勝利','10サイクル','深度の探究者','遺物収集家'][i%4]+' '+String(i+1).padStart(2,'0')}));
     const COSMETICS=Array.from({length:30},(_,i)=>({id:'cosmetic-'+(i+1),name:'裂け目の色 '+String(i+1).padStart(2,'0')}));
