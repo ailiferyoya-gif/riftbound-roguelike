@@ -25,7 +25,7 @@ python -m http.server 8765
 
 ## iOS版
 
-`Riftbound.xcodeproj` はSwiftUI版のコア実装です。HP/MP戦闘、10主人公、永続ツリー、召喚、ショップ、深層・ウィークリー・エンドレスの状態を同期しています。生成PNG素材12点、攻撃アニメーション、システム効果音、触覚フィードバックも組み込んでいます。iOS Simulatorでのビルド確認はmacOS上で行う必要があります（この作業環境はWindowsのため未検証）。
+`Riftbound.xcodeproj` はSwiftUI版のコア実装です。HP/MP戦闘、10主人公、永続ツリー、召喚、ショップ、深層・ウィークリー・エンドレスの状態を同期しています。生成PNG素材12点、攻撃アニメーション、システム効果音、触覚フィードバックも組み込んでいます。GitHub ActionsのmacOSランナーでiOS Simulator向けビルド成功を確認済みです。実機UI、VoiceOver、Reduce Motionの通し確認は実機またはSimulatorでの次工程です。
 
 ## 素材
 

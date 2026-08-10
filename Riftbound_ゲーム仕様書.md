@@ -9,7 +9,7 @@
 | 最終対象 | iPhone / iPad（iOS 17以降） |
 | 確認版 | Web / GitHub Pages |
 | 画面方向 | 縦持ちを基本とする |
-| 現在の開発段階 | Web版プレイアブル版・iOS SwiftUIコア同期済み（Simulator未検証） |
+| 現在の開発段階 | Web版プレイアブル版・iOS SwiftUIコア同期済み（GitHub ActionsのmacOSビルド確認済み） |
 
 ## 1. 作品概要
 
@@ -405,7 +405,7 @@ Web版ではユーザー操作後に音声を有効化する。iOS版ではRiftb
 - SwiftUIで実装する。
 - iOS 17以降を最低対象とする。
 - `Riftbound.xcodeproj` にHP/MP戦闘、10主人公、4系統ビルド、永続ツリー、ショップ、召喚、挑戦モード、中断復帰のコアを実装する。
-- 現在の作業環境はWindowsのため、Xcode / iOS Simulatorによるネイティブビルドと実機確認は未実施。macOSでのビルド確認をリリース前の必須作業とする。
+- GitHub ActionsのmacOSランナーで、iOS Simulator向けのDebugビルド成功を確認済み。実機UI、VoiceOver、Reduce Motionの通し確認は実機またはSimulatorでのリリース前作業とする。
 - 状態管理と画面表示を分離し、戦闘計算を単体テスト可能にする。
 - VoiceOver、Dynamic Type、Reduce Motionに対応する。
 - 将来、Game Centerの実績・ランキング連携を検討する。
@@ -615,7 +615,7 @@ Web版ではユーザー操作後に音声を有効化する。iOS版ではRiftb
 - 実装済み：iOS SwiftUI側へHP/MP、通常攻撃MP0、10主人公、固有スキル、4系統ビルド、永続ツリー、ショップ、召喚、挑戦モード、サイクルセーブを同期。
 - 実装済み：iOS側に生成PNG素材12点をバンドルし、敵を左向き・主人公を右向きで表示。攻撃・スキル・回復・被弾の踏み込み／発光、システム効果音、触覚フィードバック、モーション軽減を実装。
 - 実装済み：Web版のエリア固有背景、40種固有イベント文章、ログの読み上げ領域、生成ドット素材のロード確認。
-- 残作業：macOSでのiOSネイティブビルド・Simulator確認、VoiceOver通し確認、Reduce Motionの実機確認、30〜100サイクルの長期テスト。
+- 残作業：実機またはSimulatorでのiOS画面通し確認、VoiceOver通し確認、Reduce Motionの実機確認。Web版は30サイクル連続操作テストを完了しており、100サイクルの継続耐久テストをリリース前の追加確認とする。
 
 ### v0.1：現在のWebプロトタイプ
 
