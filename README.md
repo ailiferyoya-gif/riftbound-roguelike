@@ -1,32 +1,31 @@
 # Riftbound
 
-SwiftUIで作った、iPhone / iPad向けの縦持ちローグライクRPGプロトタイプです。
+ドット絵で遊ぶ、縦持ちポケット・ローグライクRPGです。
 
-## 遊べる内容
+## Web版
 
-- タイトル画面から新しいランを開始
-- 1フロア4部屋のルート探索
-- 通常戦闘（通常攻撃 / 重攻撃 / 回復）
-- 祠イベントの選択
-- 休息による回復とWard獲得
-- 宝箱からのゴールド・回復薬・Ward獲得
-- 3階のボス「The Hollow Crown」との戦闘
-- 勝利 / 敗北後のリスタート
+`index.html` をブラウザで開くか、GitHub Pages版を利用してください。
 
-## 開き方
+- 主人公3人、ゴールドによる直接解放、ゲーム内召喚
+- HP / MP制の戦闘、MP0の通常攻撃、主人公固有スキル
+- 9部屋の標準サイクル、イベント、休息、宝物、エリート、ボス
+- 遺物を選ぶサイクル内ビルド
+- 攻撃モーション、敵の反対向き表示、効果音、振動
+- 永続スキルツリー、主人公習熟、裂け目深度、図鑑、実績
+- `localStorage` によるゴールド・解放・強化の自動保存
 
-1. `Riftbound.xcodeproj` をXcodeで開く
-2. iOS Simulator（iOS 17以降）を選択
-3. `Riftbound` スキームでRun
+## ローカル確認
 
-Apple Developer Teamを設定していない場合、Simulator実行だけなら自動署名の設定でそのまま確認できます。
+```text
+python -m http.server 8765
+```
 
-## 構成
+ブラウザで `http://127.0.0.1:8765/index.html` を開きます。
 
-- `RiftboundApp.swift` — アプリのエントリポイントと共有ゲーム状態
-- `ContentView.swift` — タイトル、探索、戦闘、イベント、結果画面
-- `GameModels.swift` — 部屋、敵、イベント、ログのモデル
-- `GameStore.swift` — ランの状態遷移と戦闘ルール
-- `RiftboundTheme.swift` — 色、パネル、ボタン、共通コンポーネント
+## iOS版
 
-最低デプロイターゲットは iOS 17.0 です。外部画像や外部ライブラリは使っていません。
+`Riftbound.xcodeproj` はSwiftUI版の土台です。iOS Simulator（iOS 17以降）で起動できます。
+
+## 素材
+
+`assets/` に主人公・ウィスプ・沼喰らい・硝子騎士・虚ろの冠のドット素材を収録しています。
