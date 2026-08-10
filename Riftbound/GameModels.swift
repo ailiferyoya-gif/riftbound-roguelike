@@ -9,6 +9,16 @@ enum GamePhase: String {
     case defeated
 }
 
+enum CombatAnimation: String, Equatable {
+    case idle
+    case playerAttack
+    case enemyAttack
+    case skill
+    case heal
+    case victory
+    case defeat
+}
+
 enum HomeTab: String, CaseIterable {
     case heroes = "主人公"
     case tree = "ツリー"
@@ -162,6 +172,7 @@ struct Hero: Identifiable, Codable, Hashable {
     let skills: [HeroSkill]
 
     var allSkills: [HeroSkill] { skills + Self.commonSkills }
+    var artName: String { id == "oracle" ? "hero-oracle" : "player" }
 
     static let commonSkills = [
         HeroSkill(id: "focus", name: "集中の型", cost: 4, detail: "24ダメージ。MP6回復、次の攻撃+6。", icon: "scope"),

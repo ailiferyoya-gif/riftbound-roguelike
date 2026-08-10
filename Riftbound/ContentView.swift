@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @EnvironmentObject private var game: GameStore
@@ -499,9 +500,9 @@ struct CombatRoomView: View {
             if let enemy = game.currentEnemy {
                 GlassPanel {
                     HStack(alignment: .bottom, spacing: 8) {
-                        FighterPanel(name: game.selectedHero.name, icon: game.selectedHero.icon, hp: game.hp, maxHP: game.maxHP, mp: game.mp, maxMP: game.maxMP, tint: RiftboundTheme.mint)
+                        FighterPanel(name: game.selectedHero.name, icon: game.selectedHero.icon, artName: game.selectedHero.artName, hp: game.hp, maxHP: game.maxHP, mp: game.mp, maxMP: game.maxMP, tint: RiftboundTheme.mint, animation: game.combatAnimation, isEnemy: false, reduceMotion: game.profile.settings.reduceMotion)
                         Text("VS").font(.caption.weight(.black)).foregroundStyle(RiftboundTheme.gold)
-                        FighterPanel(name: enemy.name, icon: enemySymbol(enemy), hp: enemy.hp, maxHP: enemy.maxHP, mp: 0, maxMP: 1, tint: RiftboundTheme.crimson)
+                        FighterPanel(name: enemy.name, icon: enemySymbol(enemy), artName: enemy.imageName, hp: enemy.hp, maxHP: enemy.maxHP, mp: 0, maxMP: 1, tint: RiftboundTheme.crimson, animation: game.combatAnimation, isEnemy: true, reduceMotion: game.profile.settings.reduceMotion)
                     }
                     .accessibilityElement(children: .contain)
                     .accessibilityLabel("\(game.selectedHero.name) HP\(game.hp) MP\(game.mp)、敵\(enemy.name) HP\(enemy.hp)")
@@ -514,14 +515,15 @@ struct CombatRoomView: View {
                 } else {
                     VStack(spacing: 8) {
                         ActionButton(title: "通常攻撃", subtitle: "MPを消費しない基本攻撃 · MP 0", icon: "slash.circle.fill", tint: RiftboundTheme.mint, isPrimary: true, action: game.normalAttack)
-                            .disabled(game.currentEnemy == nil)
+                            .disabled(game.currentEnemy == nil || game.isAnimating)
                         ForEach(game.currentSkills) { skill in
                             SkillActionView(skill: skill)
                         }
                         HStack(spacing: 8) {
                             ActionButton(title: "守る", subtitle: "守り+18", icon: "shield.fill", tint: RiftboundTheme.blue, isPrimary: false, action: game.guardAction)
+                                .disabled(game.isAnimating)
                             ActionButton(title: "トニック", subtitle: "HP回復 · ×\(game.potions)", icon: "drop.fill", tint: RiftboundTheme.gold, isPrimary: false, action: game.drinkPotion)
-                                .disabled(game.potions == 0 || game.hp >= game.maxHP)
+                                .disabled(game.isAnimating || game.potions == 0 || game.hp >= game.maxHP)
                         }
                     }
                 }
@@ -539,7 +541,7 @@ struct SkillActionView: View {
         ActionButton(title: skill.name, subtitle: "\(skill.detail) · MP \(skill.cost)", icon: skill.icon, tint: RiftboundTheme.lilac, isPrimary: false) {
             game.useSkill(skill)
         }
-        .disabled(game.mp < skill.cost)
+        .disabled(game.isAnimating || game.mp < skill.cost)
         .accessibilityLabel("\(skill.name)、MP\(skill.cost)、\(skill.detail)")
     }
 }
@@ -694,18 +696,65 @@ struct RoomHeader: View {
 struct FighterPanel: View {
     let name: String
     let icon: String
+    let artName: String?
     let hp: Int
     let maxHP: Int
     let mp: Int
     let maxMP: Int
     let tint: Color
+    let animation: CombatAnimation
+    let isEnemy: Bool
+    let reduceMotion: Bool
+
+    private var horizontalOffset: CGFloat {
+        switch animation {
+        case .playerAttack:
+            return isEnemy ? 4 : 18
+        case .enemyAttack:
+            return isEnemy ? -18 : -4
+        case .skill:
+            return isEnemy ? 5 : 13
+        default:
+            return 0
+        }
+    }
+
+    private var verticalOffset: CGFloat {
+        animation == .heal && !isEnemy ? -8 : 0
+    }
+
+    private var imageScale: CGFloat {
+        animation == .skill && !isEnemy ? 1.08 : animation == .heal && !isEnemy ? 1.05 : 1
+    }
 
     var body: some View {
         VStack(spacing: 7) {
-            Image(systemName: icon)
-                .font(.system(size: 38, weight: .bold))
-                .frame(height: 64)
-                .foregroundStyle(tint)
+            Group {
+                if let artName, let image = UIImage(named: artName) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .interpolation(.none)
+                        .scaledToFit()
+                } else {
+                    Image(systemName: icon)
+                        .font(.system(size: 38, weight: .bold))
+                }
+            }
+                .frame(height: 92)
+                .scaleEffect(x: isEnemy ? 1 : 1, y: 1)
+                .offset(x: reduceMotion ? 0 : horizontalOffset, y: reduceMotion ? 0 : verticalOffset)
+                .scaleEffect(reduceMotion ? 1 : imageScale)
+                .overlay {
+                    if animation == .enemyAttack && !isEnemy {
+                        Circle().fill(RiftboundTheme.crimson.opacity(0.24)).blur(radius: 12)
+                    } else if animation == .skill && !isEnemy {
+                        Circle().fill(RiftboundTheme.lilac.opacity(0.26)).blur(radius: 14)
+                    } else if animation == .heal && !isEnemy {
+                        Circle().fill(RiftboundTheme.mint.opacity(0.22)).blur(radius: 14)
+                    }
+                }
+                .animation(reduceMotion ? nil : .easeOut(duration: 0.38), value: animation)
+                .accessibilityLabel("\(name)のドット絵")
             Text(name).font(.caption.weight(.bold)).lineLimit(1)
             StatBar(value: hp, maxValue: maxHP, color: tint, icon: "heart.fill", label: "HP")
             if maxMP > 1 {

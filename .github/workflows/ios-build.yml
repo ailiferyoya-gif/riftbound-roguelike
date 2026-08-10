@@ -1,0 +1,25 @@
+name: iOS build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Check out Riftbound
+        uses: actions/checkout@v4
+
+      - name: Build for iOS Simulator
+        run: |
+          xcodebuild \
+            -project Riftbound.xcodeproj \
+            -scheme Riftbound \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build

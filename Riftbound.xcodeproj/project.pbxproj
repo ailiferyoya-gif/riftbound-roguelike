@@ -12,6 +12,19 @@
 		A10000000000000000000003 /* GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* GameModels.swift */; };
 		A10000000000000000000004 /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* GameStore.swift */; };
 		A10000000000000000000005 /* RiftboundTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* RiftboundTheme.swift */; };
+		A10000000000000000000006 /* RiftboundFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* RiftboundFeedback.swift */; };
+		A10000000000000000000010 /* player.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* player.png */; };
+		A10000000000000000000011 /* hero-oracle.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* hero-oracle.png */; };
+		A10000000000000000000012 /* enemy.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* enemy.png */; };
+		A10000000000000000000013 /* enemy-wisp.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* enemy-wisp.png */; };
+		A10000000000000000000014 /* enemy-hound.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* enemy-hound.png */; };
+		A10000000000000000000015 /* enemy-glass.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* enemy-glass.png */; };
+		A10000000000000000000016 /* enemy-ashwing.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* enemy-ashwing.png */; };
+		A10000000000000000000017 /* enemy-riftback.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* enemy-riftback.png */; };
+		A10000000000000000000018 /* enemy-prism-mantis.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* enemy-prism-mantis.png */; };
+		A10000000000000000000019 /* enemy-void-herald.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* enemy-void-herald.png */; };
+		A10000000000000000000020 /* boss-astral.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* boss-astral.png */; };
+		A10000000000000000000021 /* boss-mirror-dragon.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* boss-mirror-dragon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +34,19 @@
 		B10000000000000000000003 /* GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModels.swift; sourceTree = "<group>"; };
 		B10000000000000000000004 /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
 		B10000000000000000000005 /* RiftboundTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiftboundTheme.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* RiftboundFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiftboundFeedback.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* player.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = player.png; sourceTree = "<group>"; };
+		B10000000000000000000011 /* hero-oracle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hero-oracle.png; sourceTree = "<group>"; };
+		B10000000000000000000012 /* enemy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy.png; sourceTree = "<group>"; };
+		B10000000000000000000013 /* enemy-wisp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-wisp.png; sourceTree = "<group>"; };
+		B10000000000000000000014 /* enemy-hound.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-hound.png; sourceTree = "<group>"; };
+		B10000000000000000000015 /* enemy-glass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-glass.png; sourceTree = "<group>"; };
+		B10000000000000000000016 /* enemy-ashwing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-ashwing.png; sourceTree = "<group>"; };
+		B10000000000000000000017 /* enemy-riftback.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-riftback.png; sourceTree = "<group>"; };
+		B10000000000000000000018 /* enemy-prism-mantis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-prism-mantis.png; sourceTree = "<group>"; };
+		B10000000000000000000019 /* enemy-void-herald.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-void-herald.png; sourceTree = "<group>"; };
+		B10000000000000000000020 /* boss-astral.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boss-astral.png; sourceTree = "<group>"; };
+		B10000000000000000000021 /* boss-mirror-dragon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boss-mirror-dragon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +76,19 @@
 				B10000000000000000000003 /* GameModels.swift */,
 				B10000000000000000000004 /* GameStore.swift */,
 				B10000000000000000000005 /* RiftboundTheme.swift */,
+				B10000000000000000000006 /* RiftboundFeedback.swift */,
+				B10000000000000000000010 /* player.png */,
+				B10000000000000000000011 /* hero-oracle.png */,
+				B10000000000000000000012 /* enemy.png */,
+				B10000000000000000000013 /* enemy-wisp.png */,
+				B10000000000000000000014 /* enemy-hound.png */,
+				B10000000000000000000015 /* enemy-glass.png */,
+				B10000000000000000000016 /* enemy-ashwing.png */,
+				B10000000000000000000017 /* enemy-riftback.png */,
+				B10000000000000000000018 /* enemy-prism-mantis.png */,
+				B10000000000000000000019 /* enemy-void-herald.png */,
+				B10000000000000000000020 /* boss-astral.png */,
+				B10000000000000000000021 /* boss-mirror-dragon.png */,
 			);
 			path = Riftbound;
 			sourceTree = "<group>";
@@ -120,6 +159,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000010 /* player.png in Resources */,
+				A10000000000000000000011 /* hero-oracle.png in Resources */,
+				A10000000000000000000012 /* enemy.png in Resources */,
+				A10000000000000000000013 /* enemy-wisp.png in Resources */,
+				A10000000000000000000014 /* enemy-hound.png in Resources */,
+				A10000000000000000000015 /* enemy-glass.png in Resources */,
+				A10000000000000000000016 /* enemy-ashwing.png in Resources */,
+				A10000000000000000000017 /* enemy-riftback.png in Resources */,
+				A10000000000000000000018 /* enemy-prism-mantis.png in Resources */,
+				A10000000000000000000019 /* enemy-void-herald.png in Resources */,
+				A10000000000000000000020 /* boss-astral.png in Resources */,
+				A10000000000000000000021 /* boss-mirror-dragon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +186,7 @@
 				A10000000000000000000003 /* GameModels.swift in Sources */,
 				A10000000000000000000004 /* GameStore.swift in Sources */,
 				A10000000000000000000005 /* RiftboundTheme.swift in Sources */,
+				A10000000000000000000006 /* RiftboundFeedback.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

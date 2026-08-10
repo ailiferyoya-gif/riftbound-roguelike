@@ -30,12 +30,15 @@ final class GameStore: ObservableObject {
     @Published private(set) var goldMultiplier = 1.0
     @Published private(set) var log: [CombatLogEntry] = []
     @Published private(set) var hasResume = false
+    @Published private(set) var combatAnimation: CombatAnimation = .idle
+    @Published private(set) var isAnimating = false
     @Published var toast: String?
 
     private let profileKey = "riftbound-ios-profile-v5"
     private let cycleKey = "riftbound-ios-cycle-v5"
     private var nextAttackBonus = 0
     private var discoveryBonus = 0
+    private var animationToken = 0
 
     let areaNames = ["ヴェイル遺跡", "灯火の沼", "硝子城塞", "冠の虚空"]
 
@@ -97,6 +100,8 @@ final class GameStore: ObservableObject {
         rewardChoices = []
         rewardChosen = false
         showNextButton = false
+        combatAnimation = .idle
+        isAnimating = false
         nextAttackBonus = 0
         discoveryBonus = profile.shopDiscovery
         profile.shopPotions = 0
@@ -140,17 +145,21 @@ final class GameStore: ObservableObject {
         showNextButton = snapshot.showNextButton
         rewardChosen = snapshot.rewardChosen
         hasResume = false
+        combatAnimation = .idle
+        isAnimating = false
         phase = .running
         addLog("前回のサイクルを安全な地点から再開した。", tone: .good)
     }
 
     func abandonRun() {
+        isAnimating = false
         clearCycle()
         phase = .home
         homeTab = .heroes
     }
 
     func returnToTitle() {
+        isAnimating = false
         phase = .title
         currentEnemy = nil
         showNextButton = false
@@ -159,6 +168,8 @@ final class GameStore: ObservableObject {
     func advanceToRoom() {
         guard phase == .running, !route.isEmpty else { return }
         currentRoom = route[min(roomNumber - 1, route.count - 1)]
+        combatAnimation = .idle
+        isAnimating = false
         currentEnemy = nil
         eventChoices = []
         eventText = ""
@@ -212,6 +223,8 @@ final class GameStore: ObservableObject {
 
     func normalAttack() {
         guard canAct, var enemy = currentEnemy else { return }
+        startAnimation(.playerAttack)
+        feedback(.attack)
         var damage = attack + Int.random(in: 0...6) + nextAttackBonus
         if relics.contains(where: { $0.id == "blood" }) { damage += 6 }
         nextAttackBonus = 0
@@ -226,6 +239,8 @@ final class GameStore: ObservableObject {
             if mp < skill.cost { showToast("MPが足りません") }
             return
         }
+        startAnimation(.skill)
+        feedback(.skill)
         mp -= skill.cost
         var damage: Int
         switch skill.id {
@@ -263,18 +278,22 @@ final class GameStore: ObservableObject {
 
     func guardAction() {
         guard canAct else { return }
+        startAnimation(.playerAttack)
+        feedback(.tap)
         guardValue += 18
         addLog("身構えた。守り+18。", tone: .good)
-        enemyTurn()
+        queueEnemyTurn()
     }
 
     func drinkPotion() {
         guard canAct, potions > 0, hp < maxHP else { return }
+        startAnimation(.heal)
+        feedback(.heal)
         potions -= 1
         let healed = min(22 + (relics.contains(where: { $0.id == "tonic" }) ? 15 : 0), maxHP - hp)
         hp += healed
         addLog("トニックでHPが\(healed)回復。", tone: .good)
-        enemyTurn()
+        queueEnemyTurn()
     }
 
     func chooseEvent(_ choice: EventChoice) {
@@ -312,6 +331,7 @@ final class GameStore: ObservableObject {
         }
         showNextButton = true
         addLog(eventText, tone: choice.effect == .curse ? .danger : .good)
+        feedback(choice.effect == .curse ? .enemy : .reward)
         saveCycle()
     }
 
@@ -324,6 +344,7 @@ final class GameStore: ObservableObject {
         eventText = "灯りの窪地でHP\(healed)回復。守り+12、MP+6。"
         showNextButton = true
         addLog(eventText, tone: .good)
+        feedback(.heal)
         saveCycle()
     }
 
@@ -337,6 +358,7 @@ final class GameStore: ObservableObject {
         rewardText = "+\(found)G"
         showNextButton = true
         addLog(eventText, tone: .rare)
+        feedback(.reward)
         saveCycle()
     }
 
@@ -353,6 +375,7 @@ final class GameStore: ObservableObject {
         goldMultiplier += relic.goldBonus
         rewardText = "遺物「\(relic.name)」を装備中"
         addLog("遺物「\(relic.name)」を選んだ。", tone: .rare)
+        feedback(.reward)
         saveCycle()
     }
 
@@ -460,7 +483,7 @@ final class GameStore: ObservableObject {
     private let depthRules = ["標準規則", "敵は初手に守りを得る", "休息の回復量-25%", "エリート出現率上昇", "敵のHP+12%", "敵の攻撃+8%", "遺物候補が呪われる"]
 
     private var canAct: Bool {
-        phase == .running && (currentRoom == .battle || currentRoom == .elite || currentRoom == .boss) && !showNextButton && currentEnemy != nil
+        phase == .running && !isAnimating && (currentRoom == .battle || currentRoom == .elite || currentRoom == .boss) && !showNextButton && currentEnemy != nil
     }
 
     private func eventChoicesFor(branch: Int) -> [EventChoice] {
@@ -477,7 +500,7 @@ final class GameStore: ObservableObject {
     private func resolveAttack() {
         guard let enemy = currentEnemy else { return }
         if enemy.hp > 0 {
-            enemyTurn()
+            queueEnemyTurn()
             return
         }
         let found = Int(Double(enemy.reward) * goldMultiplier)
@@ -489,6 +512,7 @@ final class GameStore: ObservableObject {
             finishVictory()
             return
         }
+        isAnimating = false
         rewardChoices = relicPool()
         rewardText = "+\(found)G"
         rewardChosen = false
@@ -498,8 +522,18 @@ final class GameStore: ObservableObject {
         saveCycle()
     }
 
-    private func enemyTurn() {
+    private func queueEnemyTurn() {
+        guard phase == .running else { return }
+        isAnimating = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.38) { [weak self] in
+            self?.performEnemyTurn()
+        }
+    }
+
+    private func performEnemyTurn() {
         guard let enemy = currentEnemy, enemy.hp > 0 else { return }
+        startAnimation(.enemyAttack)
+        feedback(.enemy)
         var rawDamage = Int.random(in: enemy.attack)
         if runMode == .weekly && weeklyRule.contains("通常攻撃") { rawDamage = Int(Double(rawDamage) * 1.25) }
         if ruleText.contains("敵の攻撃+8%") { rawDamage = Int(Double(rawDamage) * 1.08) }
@@ -511,10 +545,17 @@ final class GameStore: ObservableObject {
         if damage > 0 { addLog("\(enemy.name)の攻撃。\(damage)ダメージ。", tone: .danger) }
         if currentRoom == .boss && mp > 0 { mp = max(0, mp - 2) }
         if hp <= 0 {
+            isAnimating = false
             phase = .defeated
             bankRun(win: false)
         } else {
             saveCycle()
+            let token = animationToken
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) { [weak self] in
+                guard let self, self.animationToken == token, self.phase == .running else { return }
+                self.combatAnimation = .idle
+                self.isAnimating = false
+            }
         }
     }
 
@@ -542,12 +583,16 @@ final class GameStore: ObservableObject {
     }
 
     private func finishVictory() {
+        isAnimating = false
+        combatAnimation = .victory
+        feedback(.victory)
         phase = .victory
         showNextButton = false
         bankRun(win: true)
     }
 
     private func bankRun(win: Bool) {
+        if !win { feedback(.defeat) }
         profile.gold += cycleGold
         profile.mastery[selectedHero.id, default: 0] += win ? (runMode == .weekly ? 5 : 3) : 1
         if win {
@@ -617,5 +662,14 @@ final class GameStore: ObservableObject {
     private func addLog(_ text: String, tone: LogTone) {
         log.insert(CombatLogEntry(text: text, tone: tone), at: 0)
         if log.count > 8 { log.removeLast() }
+    }
+
+    private func startAnimation(_ animation: CombatAnimation) {
+        animationToken += 1
+        combatAnimation = animation
+    }
+
+    private func feedback(_ kind: RiftboundFeedbackKind) {
+        RiftboundFeedback.shared.play(kind, soundEnabled: profile.settings.sound, vibrationEnabled: profile.settings.vibration)
     }
 }
