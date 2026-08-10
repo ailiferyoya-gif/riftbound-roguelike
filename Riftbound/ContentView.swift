@@ -46,7 +46,7 @@ struct TitleView: View {
                 HStack {
                     CapsuleLabel(text: "A POCKET ROGUELIKE RPG", color: RiftboundTheme.mint)
                     Spacer()
-                    Text("v0.5")
+                    Text("v0.5.2")
                         .font(.caption.monospaced())
                         .foregroundStyle(RiftboundTheme.muted)
                 }
