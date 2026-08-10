@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090c18">
-  <title>Riftbound — A pocket roguelike</title>
+  <title>Riftbound — ポケット・ローグライク</title>
   <style>
     :root {
       color-scheme: dark;
@@ -158,8 +158,59 @@
     const renderRun = () => '<div class="shell run-screen"><header>' + renderHeader() + '</header>' + renderRoute() + renderRoom() + '<button class="abandon" data-action="abandon">Abandon this run</button></div>';
     const renderEnd = victory => '<div class="shell end-screen ' + (victory ? '' : 'defeat') + '"><div><div class="end-icon">' + (victory ? '♛' : '☾') + '</div><h1>' + (victory ? 'THE RIFT REMEMBERS' : 'THE VEIL WINS') + '</h1><p>' + (victory ? 'You carried the Heart through three floors of impossible dark.' : 'Your run ends here. The next one starts with what you learned.') + '</p><div class="end-card"><div class="end-stat"><strong>' + state.floor + '</strong><small>FLOOR</small></div><div class="end-stat"><strong>' + state.gold + '</strong><small>GOLD</small></div><div class="end-stat"><strong>#' + state.run + '</strong><small>RUN</small></div></div></div><div class="end-actions"><button class="primary-button" data-action="start">Start another run</button><button class="abandon" data-action="abandon">Return to title</button></div></div>';
     const howTo = () => { app.innerHTML = '<div class="shell title-screen"><div class="panel howto"><button class="abandon" data-action="abandon" style="margin:0 0 20px;text-align:left">← Back</button><h2>How to survive</h2><div class="rule"><div class="rule-icon">ϟ</div><div><strong>Spend focus wisely</strong><p>Basic attacks cost 1 focus. Heavy strikes cost 2 and hit hard.</p></div></div><div class="rule"><div class="rule-icon">♥</div><div><strong>Stay alive</strong><p>Potions heal 30 HP, but using one gives the enemy a turn.</p></div></div><div class="rule"><div class="rule-icon">⌁</div><div><strong>Read the route</strong><p>Each floor has a fight, an omen, a camp, and a relic vault.</p></div></div><div class="rule"><div class="rule-icon">♛</div><div><strong>Face the Heart</strong><p>On floor three, the first room is the crowned heart of the rift.</p></div></div></div></div>'; };
-    function render() { app.innerHTML = state.phase === 'title' ? renderTitle() : state.phase === 'run' ? renderRun() : renderEnd(state.phase === 'victory'); }
-    app.addEventListener('click', e => { const target = e.target.closest('[data-action]'); if (!target) return; const action = target.dataset.action; if (action === 'start') startRun(); else if (action === 'how') howTo(); else if (action === 'attack') attack(); else if (action === 'heavy') heavy(); else if (action === 'potion') potion(); else if (action === 'rest') rest(); else if (action === 'treasure') treasure(); else if (action === 'advance') advance(); else if (action === 'abandon') resetTitle(); else if (action === 'event-shrine') chooseEvent('shrine'); else if (action === 'event-gamble') chooseEvent('gamble'); });
+    const ja = html => {
+      const replacements = [
+        ['Basic attacks cost 1 focus. Heavy strikes cost 2 and hit hard.', '通常攻撃は集中1、重撃は集中2。重撃は大ダメージを与える。'],
+        ['Potions heal 30 HP, but using one gives the enemy a turn.', 'トニックはHPを30回復するが、敵に1ターン渡す。'],
+        ['A POCKET ROGUELIKE', 'ポケット・ローグライク'],
+        ['Every descent is a new story.', '降りるたび、新しい物語が始まる。'],
+        ['Every victory leaves a scar.', '勝利のたび、傷跡が残る。'],
+        ['FLOORS', '階層'], ['BUILDS', 'ビルド'], ['LIFE', '命'],
+        ['Begin a new run', '新しいランを始める'], ['How to survive', '生き残るために'],
+        ['THE VEIL IS HUNGRY TONIGHT', '今夜もヴェイルは飢えている'],
+        ['THE VEIL', 'ヴェイル'], ['Floor ', '階層 '], ['NOW', '現在'], ['ROOM', '部屋'],
+        ['VITALITY', '生命力'], ['FOCUS', '集中'], ['Tonic', 'トニック'], ['Ward', '守り'],
+        ['COMBAT', '戦闘'], ['OMEN', '予兆'], ['CAMP', '休息'], ['RELIC', '宝物'], ['THE HEART', '核心'],
+        ['Veilborn Ambush', 'ヴェイルボーンの奇襲'], ['Something in the dark heard your footsteps.', '闇の何かが、あなたの足音を聞きつけた。'],
+        ['The Listening Shrine', '耳を澄ます祠'], ['A little mercy can change the shape of a run.', '小さな慈悲が、ランの形を変える。'],
+        ['Lantern Hollow', '灯りの窪地'], ['The dungeon exhales. You may do the same.', 'ダンジョンが息を吐く。あなたも、ひと息つける。'],
+        ['The Unlatched Vault', '開かれた宝物庫'], ['A lock without a key is still a question.', '鍵のない錠前は、問いかけだ。'],
+        ['The Crowned Hollow', '冠を戴く虚ろ'], ['Every rift has a heart. This one has teeth.', '裂け目には核がある。ここには牙がある。'],
+        ['The Hollow Crown', '虚ろの冠'], ['A king-shaped absence wearing the memories of a thousand runs.', '無数のランの記憶をまとった、王の形をした空白。'],
+        ['Lantern Wisp', '灯火のウィスプ'], ['A hungry mote of blue fire.', '飢えた青い火の粒。'],
+        ['Mire Hound', '沼地の猟犬'], ['It smells the fear beneath your armor.', '鎧の下の恐怖を嗅ぎつける。'],
+        ['Glass Knight', '硝子の騎士'], ['Its sword rings before it moves.', '動く前から、その剣は鳴る。'],
+        ['The rift opens its crown.', '裂け目が冠を開く。'], ['A Veilborn steps out of the rain.', '雨の中からヴェイルボーンが現れた。'],
+        ['The shrine remembers every traveler who passed before you. It asks for a small truth.', '祠は、ここを通った旅人をすべて覚えている。小さな真実を求めている。'],
+        ['Offer a memory', '記憶をひとつ捧げる'], ['+18 HP and refill your focus', 'HPを18回復し、集中を満たす'],
+        ['Ask what it knows', '知ることを尋ねる'], ['Risk 8 HP for a pouch of gold', 'HPを8失い、金貨を得る'],
+        ['Blue fire gathers in the hollow. One quiet breath is worth more than a sharp blade.', '青い炎が窪地に集まっている。静かなひと息は、鋭い刃より価値がある。'],
+        ['A brass chest waits beneath a veil of dust. Its lock is already warm.', '埃のヴェイルの下で、真鍮の箱が待っている。錠前はすでに温かい。'],
+        ['The ward absorbs ', '守りが'], [' strikes for ', 'の攻撃で'], ['You cut through the veil for ', 'ヴェイルを斬り、'], ['A charged strike lands for ', '渾身の一撃が'], [' damage.', 'ダメージ。'],
+        ['The creature dissolves into blue ash.', '敵は青い灰となって消えた。'], ['The rift collapses around its stolen crown.', '裂け目が、奪われた冠を中心に崩れ落ちた。'],
+        ['The Heart is yours', '核心を手にした'], ['You drink a sunroot tonic and recover ', 'サンルートのトニックで'], [' HP.', ' HP回復。'],
+        ['The veil closes over your last breath.', 'ヴェイルが最後の息を覆った。'], ['The shrine takes your memory, then gives you back ', '祠は記憶を奪い、代わりに'], [' HP and a clear mind.', ' HPと澄んだ心を与えた。'],
+        ['The shrine answers kindly.', '祠は優しく答えた。'], ['The shrine shows you a future made of gold. It costs 8 HP to remember it.', '祠は金でできた未来を見せた。それを覚えているにはHP8が必要だ。'],
+        ['A dangerous bargain, but the purse is heavier.', '危険な取引だが、財布は重くなった。'], ['The shrine has made its choice.', '祠は答えを選んだ。'],
+        ['Walk onward', '先へ進む'], ['The omen is behind you', '予兆はもう背後にある'], ['A little stronger.', '少しだけ強くなった。'],
+        ['Leave the hollow', '窪地を出る'], ['The path is waiting', '道が待っている'], ['Rest by the flame', '炎のそばで休む'],
+        ['Recover vitality and gain ward', '生命力を回復し、守りを得る'], ['Descend deeper', 'さらに深く降りる'], ['Keep what you found', '見つけたものを手にする'],
+        ['Open the vault', '宝物庫を開く'], ['Gold, tonic, and a warding charm', 'ゴールド、トニック、守りの護符'], ['The vault rewards your courage.', '宝物庫が勇気に報いた。'],
+        ['Inside: ', '中身：'], ['one tonic', 'トニック1個'], ['and a warding charm.', '守りの護符。'], ['RUN LOG', 'ランログ'], ['Strike', '斬撃'], ['Heavy', '重撃'], ['1 focus', '集中 1'], ['2 focus', '集中 2'], ['heal 30', '30回復'],
+        ['The rift has been opened', '裂け目は開かれた'], ['The path is still breathing', '道はまだ息づいている'], ['Abandon this run', 'このランを諦める'],
+        ['THE RIFT REMEMBERS', '裂け目は覚えている'], ['THE VEIL WINS', 'ヴェイルの勝利'], ['You carried the Heart through three floors of impossible dark.', 'あなたは三階層の果てしない闇を越え、核心を運び出した。'],
+        ['Your run ends here. The next one starts with what you learned.', 'ここでランは終わる。次のランは、この経験から始まる。'], ['FLOOR', '階層'], ['GOLD', 'ゴールド'],
+        ['Start another run', 'もう一度ランを始める'], ['Return to title', 'タイトルへ戻る'], ['Back', '戻る'],
+        ['Spend focus wisely', '集中を使いこなす'], ['Basic attacks cost 1 focus. Heavy strikes cost 2 and hit hard.', '通常攻撃は集中1、重撃は集中2。重撃は大ダメージを与える。'],
+        ['Stay alive', '生き残る'], ['Potions heal 30 HP, but using one gives the enemy a turn.', 'トニックはHPを30回復するが、敵に1ターン渡す。'],
+        ['Read the route', '道を読む'], ['Each floor has a fight, an omen, a camp, and a relic vault.', '各階層には、戦闘・予兆・休息・宝物庫がある。'],
+        ['Face the Heart', '核心に挑む'], ['On floor three, the first room is the crowned heart of the rift.', '3階層目の最初の部屋には、裂け目の冠の核心が待っている。'],
+        ['gold', 'ゴールド'], ['damage', 'ダメージ'], ['Abandon', '諦める']
+      ];
+      return replacements.reduce((value, pair) => value.replaceAll(pair[0], pair[1]), html);
+    };
+    function render() { app.innerHTML = ja(state.phase === 'title' ? renderTitle() : state.phase === 'run' ? renderRun() : renderEnd(state.phase === 'victory')); }
+    app.addEventListener('click', e => { const target = e.target.closest('[data-action]'); if (!target) return; const action = target.dataset.action; if (action === 'start') startRun(); else if (action === 'how') { howTo(); app.innerHTML = ja(app.innerHTML); } else if (action === 'attack') attack(); else if (action === 'heavy') heavy(); else if (action === 'potion') potion(); else if (action === 'rest') rest(); else if (action === 'treasure') treasure(); else if (action === 'advance') advance(); else if (action === 'abandon') resetTitle(); else if (action === 'event-shrine') chooseEvent('shrine'); else if (action === 'event-gamble') chooseEvent('gamble'); });
     render();
   </script>
 </body>
