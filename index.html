@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090c18">
+  <title>Riftbound — A pocket roguelike</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090c18;
+      --panel: rgba(21, 25, 42, .94);
+      --raised: #20243a;
+      --text: #f4f3fa;
+      --muted: #969aae;
+      --ember: #ff6b4d;
+      --crimson: #eb3158;
+      --lilac: #a783ff;
+      --mint: #58e0c1;
+      --gold: #ffc34d;
+      --blue: #65a8ff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); }
+    body { font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, BlinkMacSystemFont, sans-serif; color: var(--text); }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    button:disabled { cursor: default; opacity: .42; }
+    .app { min-height: 100vh; overflow: hidden; position: relative; }
+    .app::before, .app::after { content: ""; position: fixed; pointer-events: none; border-radius: 50%; filter: blur(70px); opacity: .42; }
+    .app::before { width: 260px; height: 260px; right: -100px; top: -100px; background: rgba(167,131,255,.17); }
+    .app::after { width: 240px; height: 240px; left: -130px; bottom: -100px; background: rgba(255,107,77,.12); }
+    .shell { width: min(100% - 32px, 590px); margin: 0 auto; position: relative; z-index: 1; }
+    .title-screen, .end-screen { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 46px 0 34px; }
+    .eyebrow-row, .top-row, .gold-pill, .mini-row, .room-title-row, .outcome, .action-row { display: flex; align-items: center; }
+    .eyebrow-row { justify-content: space-between; }
+    .capsule { display: inline-block; padding: 7px 11px; border-radius: 999px; background: rgba(88,224,193,.12); color: var(--mint); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.4px; }
+    .version { color: var(--muted); font: 500 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .title-copy { padding-top: 62px; }
+    .brand { margin: 0; font-size: clamp(58px, 15vw, 78px); line-height: .88; letter-spacing: -3px; font-weight: 950; }
+    .brand span { background: linear-gradient(100deg, var(--lilac), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { margin: 22px 0 0; font-size: 20px; line-height: 1.35; color: rgba(244,243,250,.84); }
+    .title-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 34px; }
+    .title-stat strong, .end-stat strong { display: block; font-size: 24px; }
+    .title-stat small, .end-stat small { color: var(--muted); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1px; }
+    .title-actions { display: grid; gap: 12px; margin-top: 42px; }
+    .primary-button, .secondary-button, .action-button, .combat-button { border: 0; transition: transform .15s ease, filter .15s ease; }
+    .primary-button:hover, .secondary-button:hover, .action-button:hover, .combat-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .primary-button { display: flex; justify-content: space-between; align-items: center; min-height: 60px; padding: 0 18px; border-radius: 18px; background: var(--text); color: var(--bg); font-weight: 800; }
+    .secondary-button { display: flex; gap: 12px; align-items: center; min-height: 54px; padding: 0 18px; border-radius: 18px; background: var(--panel); color: var(--text); font-weight: 700; text-align: left; }
+    .secondary-button span:last-child { margin-left: auto; color: var(--muted); }
+    .status-line { display: flex; gap: 8px; align-items: center; margin-top: 30px; color: var(--muted); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.4px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ember); }
+    .run-screen { padding: 18px 0 30px; }
+    .top-row { justify-content: space-between; align-items: flex-start; }
+    .section-label { color: var(--muted); font: 800 11px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2px; }
+    .floor { margin-top: 4px; font-size: 27px; font-weight: 950; }
+    .gold-pill { gap: 6px; padding: 9px 12px; border-radius: 999px; background: rgba(255,195,77,.12); color: var(--gold); font-weight: 800; }
+    .stat-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    .bar-label { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .bar-label strong { color: var(--text); }
+    .bar { height: 6px; margin-top: 6px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.08); }
+    .bar i { display: block; height: 100%; border-radius: inherit; transition: width .2s ease; }
+    .vitality i { background: var(--ember); } .focus i { background: var(--lilac); }
+    .mini-row { gap: 7px; margin-top: 12px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .mini-row .spacer { flex: 1; }
+    .mint { color: var(--mint); } .blue { color: var(--blue); }
+    .route { display: flex; align-items: flex-start; margin: 24px 0 18px; }
+    .route-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; position: relative; }
+    .route-item:not(:first-child)::before { content: ""; height: 2px; position: absolute; left: -50%; right: 50%; top: 17px; background: rgba(255,255,255,.1); z-index: -1; }
+    .route-item.cleared:not(:first-child)::before, .route-item.current:not(:first-child)::before { background: color-mix(in srgb, var(--room-color), transparent 30%); }
+    .node { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; background: rgba(255,255,255,.04); color: var(--muted); font-size: 13px; }
+    .current .node { border: 2px solid var(--room-color); background: color-mix(in srgb, var(--room-color), transparent 80%); color: var(--room-color); box-shadow: 0 0 24px color-mix(in srgb, var(--room-color), transparent 65%); }
+    .cleared .node { border-color: color-mix(in srgb, var(--room-color), transparent 35%); color: var(--room-color); }
+    .route small { color: var(--muted); font: 800 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .current small { color: var(--room-color); }
+    .panel { padding: 18px; border: 1px solid rgba(255,255,255,.08); border-radius: 24px; background: var(--panel); box-shadow: 0 22px 50px rgba(0,0,0,.16); }
+    .room-title-row { align-items: flex-start; gap: 12px; }
+    .room-icon { width: 45px; height: 45px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 14px; background: color-mix(in srgb, var(--room-color), transparent 85%); color: var(--room-color); font-size: 20px; }
+    .room-meta { min-width: 0; }
+    .room-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .room-badge { padding: 6px 9px; border-radius: 999px; background: color-mix(in srgb, var(--room-color), transparent 88%); color: var(--room-color); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.2px; }
+    .room-number { color: var(--muted); font: 800 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .room-name { margin: 7px 0 4px; font-size: 22px; line-height: 1.06; font-weight: 950; }
+    .room-subtitle { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .enemy { display: flex; gap: 13px; align-items: flex-start; margin-top: 16px; padding: 14px; border-radius: 18px; background: var(--raised); }
+    .enemy-icon { width: 58px; height: 58px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: rgba(167,131,255,.15); color: var(--lilac); font-size: 24px; }
+    .boss .enemy-icon { background: rgba(235,49,88,.15); color: var(--crimson); }
+    .enemy-info { flex: 1; min-width: 0; }
+    .enemy-line { display: flex; gap: 8px; justify-content: space-between; align-items: baseline; }
+    .enemy-line strong { font-size: 16px; } .enemy-line span { color: var(--ember); font-size: 12px; font-weight: 800; }
+    .enemy-description { margin: 5px 0 8px; color: var(--muted); font-size: 12px; line-height: 1.3; }
+    .enemy-hp { height: 6px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.08); }
+    .enemy-hp i { display: block; height: 100%; border-radius: inherit; background: var(--ember); transition: width .2s ease; }
+    .boss .enemy-hp i { background: var(--crimson); }
+    .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .combat-button { min-height: 104px; padding: 13px; border: 1px solid rgba(255,255,255,.06); border-radius: 16px; background: rgba(255,255,255,.04); text-align: left; }
+    .combat-button .action-icon { font-size: 18px; } .combat-button strong { display: block; margin-top: 9px; font-size: 14px; } .combat-button small { display: block; margin-top: 4px; color: var(--room-color); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .log { margin-top: 16px; } .log-title { color: var(--muted); font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.3px; }
+    .log-line { display: flex; gap: 7px; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.25; }
+    .log-line i { width: 5px; height: 5px; flex: 0 0 auto; margin-top: 5px; border-radius: 50%; background: currentColor; }
+    .log-line.good { color: var(--mint); } .log-line.danger { color: var(--ember); } .log-line.rare { color: var(--gold); }
+    .event-copy { margin: 16px 0 14px; color: rgba(244,243,250,.88); font-size: 15px; line-height: 1.55; }
+    .action-stack { display: grid; gap: 10px; }
+    .action-button { display: flex; gap: 12px; align-items: center; width: 100%; padding: 13px; border: 1px solid rgba(255,255,255,.06); border-radius: 16px; background: var(--raised); text-align: left; }
+    .action-button .action-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--room-color), transparent 86%); color: var(--room-color); }
+    .action-button .action-copy { display: grid; gap: 2px; } .action-button strong { font-size: 14px; } .action-button small { color: var(--muted); font-size: 11px; } .action-button em { margin-left: auto; color: var(--room-color); font-style: normal; }
+    .outcome { gap: 10px; margin-top: 16px; padding: 12px; border-radius: 14px; background: color-mix(in srgb, var(--room-color), transparent 88%); color: var(--room-color); font-size: 13px; font-weight: 800; }
+    .continue { margin-top: 10px; }
+    .abandon { display: block; margin: 16px auto 0; border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .end-screen { justify-content: center; align-items: center; text-align: center; }
+    .end-icon { width: 84px; height: 84px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,195,77,.13); color: var(--gold); font-size: 34px; }
+    .end-screen.defeat .end-icon { background: rgba(255,107,77,.13); color: var(--ember); }
+    .end-screen h1 { margin: 28px 0 0; font-size: 29px; line-height: 1.08; font-weight: 950; }
+    .end-screen p { max-width: 410px; margin: 12px 0 0; color: var(--muted); font-size: 15px; line-height: 1.45; }
+    .end-card { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 32px 0; padding: 18px; border: 1px solid rgba(255,255,255,.08); border-radius: 24px; background: var(--panel); }
+    .end-actions { width: 100%; display: grid; gap: 12px; }
+    .howto { max-width: 520px; padding-bottom: 32px; } .howto h2 { margin-top: 0; font-size: 28px; } .rule { display: flex; gap: 13px; align-items: flex-start; margin-top: 20px; text-align: left; } .rule-icon { width: 38px; height: 38px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: rgba(167,131,255,.13); color: var(--lilac); } .rule strong { display: block; font-size: 15px; } .rule p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    @media (max-width: 420px) { .shell { width: min(100% - 24px, 590px); } .actions { grid-template-columns: 1fr 1fr; } .combat-button:last-child { grid-column: 1 / -1; min-height: 74px; } .brand { font-size: 58px; } }
+  </style>
+</head>
+<body>
+  <main id="app" class="app"></main>
+  <script>
+    const colors = { battle: '#ff6b4d', event: '#a783ff', rest: '#58e0c1', treasure: '#ffc34d', boss: '#eb3158' };
+    const roomMeta = {
+      battle: { title: 'Veilborn Ambush', subtitle: 'Something in the dark heard your footsteps.', icon: '✦', badge: 'COMBAT' },
+      event: { title: 'The Listening Shrine', subtitle: 'A little mercy can change the shape of a run.', icon: '◉', badge: 'OMEN' },
+      rest: { title: 'Lantern Hollow', subtitle: 'The dungeon exhales. You may do the same.', icon: '♨', badge: 'CAMP' },
+      treasure: { title: 'The Unlatched Vault', subtitle: 'A lock without a key is still a question.', icon: '◇', badge: 'RELIC' },
+      boss: { title: 'The Crowned Hollow', subtitle: 'Every rift has a heart. This one has teeth.', icon: '♛', badge: 'THE HEART' }
+    };
+    const state = { phase: 'title', floor: 1, room: 1, maxRooms: 4, hp: 86, maxHP: 100, energy: 3, maxEnergy: 3, gold: 46, potions: 2, ward: 0, roomKind: 'battle', enemy: null, eventText: '', choices: [], next: false, reward: '', log: [], run: 0 };
+    const app = document.getElementById('app');
+    const route = () => state.floor >= 3 ? ['boss', 'event', 'rest', 'treasure'] : ['battle', 'event', 'rest', 'treasure'];
+    const vibrate = () => navigator.vibrate && navigator.vibrate(12);
+    const addLog = (text, tone = '') => { state.log.unshift({ text, tone }); state.log = state.log.slice(0, 6); };
+    const enemyFor = kind => kind === 'boss' ? { name: 'The Hollow Crown', max: 222, hp: 222, attack: [15, 24], description: 'A king-shaped absence wearing the memories of a thousand runs.', icon: '♛', boss: true } : (() => { const variants = [['Lantern Wisp', '✦', 'A hungry mote of blue fire.', 70, [8, 14]], ['Mire Hound', '◒', 'It smells the fear beneath your armor.', 84, [10, 16]], ['Glass Knight', '◈', 'Its sword rings before it moves.', 98, [11, 18]]]; const v = variants[Math.floor(Math.random() * variants.length)]; return { name: v[0], icon: v[1], description: v[2], max: v[3] + state.floor * 12, hp: v[3] + state.floor * 12, attack: v[4], boss: false }; })();
+    const currentRoom = () => route()[Math.min(state.room - 1, 3)];
+    const startRun = () => { Object.assign(state, { phase: 'run', run: state.run + 1, floor: 1, room: 1, hp: 100, energy: 3, gold: 46, potions: 2, ward: 0 }); advanceToRoom(); vibrate(); };
+    const advanceToRoom = () => { state.roomKind = currentRoom(); state.enemy = null; state.next = false; state.reward = ''; state.energy = state.maxEnergy; state.log = []; if (state.roomKind === 'battle' || state.roomKind === 'boss') { state.enemy = enemyFor(state.roomKind); addLog(state.roomKind === 'boss' ? 'The rift opens its crown.' : 'A Veilborn steps out of the rain.', 'danger'); } if (state.roomKind === 'event') { state.eventText = 'The shrine remembers every traveler who passed before you. It asks for a small truth.'; state.choices = [{ key: 'shrine', title: 'Offer a memory', detail: '+18 HP and refill your focus', icon: '♥' }, { key: 'gamble', title: 'Ask what it knows', detail: 'Risk 8 HP for a pouch of gold', icon: '?' }]; } if (state.roomKind === 'rest') state.eventText = 'Blue fire gathers in the hollow. One quiet breath is worth more than a sharp blade.'; if (state.roomKind === 'treasure') state.eventText = 'A brass chest waits beneath a veil of dust. Its lock is already warm.'; render(); };
+    const advance = () => { if (state.roomKind === 'boss') { state.phase = 'victory'; state.enemy = null; render(); return; } if (state.room >= state.maxRooms) { state.floor++; state.room = 1; } else state.room++; advanceToRoom(); vibrate(); };
+    const enemyTurn = () => { if (!state.enemy || state.enemy.hp <= 0) return; const raw = state.enemy.attack[0] + Math.floor(Math.random() * (state.enemy.attack[1] - state.enemy.attack[0] + 1)); const blocked = Math.min(state.ward, raw); state.ward -= blocked; const damage = raw - blocked; if (blocked) addLog('The ward absorbs ' + blocked + ' damage.', 'good'); if (damage) { state.hp = Math.max(0, state.hp - damage); addLog(state.enemy.name + ' strikes for ' + damage + ' damage.', 'danger'); } if (state.hp <= 0) { state.phase = 'defeat'; addLog('The veil closes over your last breath.', 'danger'); } };
+    const resolveAttack = () => { if (state.enemy.hp <= 0) { const found = state.enemy.boss ? 250 : 24 + state.floor * 8; state.gold += found; state.reward = state.enemy.boss ? 'The Heart is yours' : '+' + found + ' gold'; addLog(state.enemy.boss ? 'The rift collapses around its stolen crown.' : 'The creature dissolves into blue ash.', 'rare'); state.next = true; } else enemyTurn(); render(); };
+    const attack = () => { if (!state.enemy || state.next || state.energy < 1) return; state.energy--; const damage = 14 + Math.floor(Math.random() * 7) + state.floor; state.enemy.hp = Math.max(0, state.enemy.hp - damage); addLog('You cut through the veil for ' + damage + ' damage.', 'good'); resolveAttack(); vibrate(); };
+    const heavy = () => { if (!state.enemy || state.next || state.energy < 2) return; state.energy -= 2; const damage = 28 + Math.floor(Math.random() * 15) + state.floor * 2; state.enemy.hp = Math.max(0, state.enemy.hp - damage); addLog('A charged strike lands for ' + damage + ' damage.', 'rare'); resolveAttack(); vibrate(); };
+    const potion = () => { if (!state.enemy || state.next || state.potions < 1 || state.hp === state.maxHP) return; state.potions--; const heal = Math.min(30, state.maxHP - state.hp); state.hp += heal; addLog('You drink a sunroot tonic and recover ' + heal + ' HP.', 'good'); enemyTurn(); render(); vibrate(); };
+    const chooseEvent = choice => { if (state.next) return; if (choice === 'shrine') { const heal = Math.min(18, state.maxHP - state.hp); state.hp += heal; state.energy = state.maxEnergy; state.eventText = 'The shrine takes your memory, then gives you back ' + heal + ' HP and a clear mind.'; addLog('The shrine answers kindly.', 'good'); } else { state.hp = Math.max(1, state.hp - 8); state.gold += 32 + state.floor * 8; state.eventText = 'The shrine shows you a future made of gold. It costs 8 HP to remember it.'; addLog('A dangerous bargain, but the purse is heavier.', 'rare'); } state.next = true; render(); vibrate(); };
+    const rest = () => { if (state.next) return; const heal = Math.min(30 + state.floor * 4, state.maxHP - state.hp); state.hp += heal; state.ward = 6 + state.floor * 2; state.eventText = 'You rest beneath the blue flame. Recover ' + heal + ' HP and gain ' + state.ward + ' ward.'; state.next = true; addLog('The hollow gives you shelter.', 'good'); render(); vibrate(); };
+    const treasure = () => { if (state.next) return; const found = 48 + state.floor * 16; state.gold += found; state.potions++; state.ward += 8; state.eventText = 'Inside: ' + found + ' gold, one tonic, and a warding charm.'; state.reward = '+' + found + ' gold'; state.next = true; addLog('The vault rewards your courage.', 'rare'); render(); vibrate(); };
+    const resetTitle = () => { state.phase = 'title'; state.enemy = null; state.next = false; render(); };
+    const bar = (value, max, cls) => '<div class="bar ' + cls + '"><i style="width:' + Math.max(0, Math.min(100, value / max * 100)) + '%"></i></div>';
+    const renderTitle = () => '<div class="shell title-screen"><div><div class="eyebrow-row"><span class="capsule">A POCKET ROGUELIKE</span><span class="version">v0.1</span></div><div class="title-copy"><h1 class="brand">RIFT<br><span>BOUND</span></h1><p class="lead">Every descent is a new story.<br>Every victory leaves a scar.</p><div class="title-stats"><div class="title-stat"><strong>03</strong><small>FLOORS</small></div><div class="title-stat"><strong>∞</strong><small>BUILDS</small></div><div class="title-stat"><strong>01</strong><small>LIFE</small></div></div><div class="title-actions"><button class="primary-button" data-action="start">Begin a new run <b>↗</b></button><button class="secondary-button" data-action="how"><span>▣</span><span>How to survive</span><span>›</span></button></div></div></div><div class="status-line"><i class="status-dot"></i> THE VEIL IS HUNGRY TONIGHT</div></div>';
+    const renderHeader = () => '<div class="top-row"><div><div class="section-label">THE VEIL</div><div class="floor">Floor ' + state.floor + '</div></div><div class="gold-pill">● ' + state.gold + '</div></div><div class="stat-bars"><div><div class="bar-label"><span>♥ VITALITY</span><strong>' + state.hp + ' / ' + state.maxHP + '</strong></div>' + bar(state.hp, state.maxHP, 'vitality') + '</div><div><div class="bar-label"><span>ϟ FOCUS</span><strong>' + state.energy + ' / ' + state.maxEnergy + '</strong></div>' + bar(state.energy, state.maxEnergy, 'focus') + '</div></div><div class="mini-row"><span class="mint">◆</span> Tonic ×' + state.potions + '<span class="spacer"></span>' + (state.ward ? '<span class="blue">⬟</span> Ward ' + state.ward : '') + '</div>';
+    const renderRoute = () => '<div class="route">' + route().map((kind, i) => { const meta = roomMeta[kind]; const cls = i === state.room - 1 ? 'current' : i < state.room - 1 ? 'cleared' : ''; return '<div class="route-item ' + cls + '" style="--room-color:' + colors[kind] + '"><div class="node">' + (i < state.room - 1 ? '✓' : meta.icon) + '</div><small>' + (i === state.room - 1 ? 'NOW' : String(i + 1).padStart(2, '0')) + '</small></div>'; }).join('') + '</div>';
+    const renderLog = () => state.log.length ? '<div class="log"><div class="log-title">RUN LOG</div>' + state.log.map(x => '<div class="log-line ' + x.tone + '"><i></i><span>' + x.text + '</span></div>').join('') + '</div>' : '';
+    const renderAction = (title, detail, icon, action) => '<button class="action-button" data-action="' + action + '"><span class="action-icon">' + icon + '</span><span class="action-copy"><strong>' + title + '</strong><small>' + detail + '</small></span><em>›</em></button>';
+    const renderRoom = () => { const kind = state.roomKind, meta = roomMeta[kind], style = 'style="--room-color:' + colors[kind] + '"'; let body = ''; if (kind === 'battle' || kind === 'boss') { const enemy = state.enemy; body += '<div class="enemy ' + (kind === 'boss' ? 'boss' : '') + '" ' + style + '><div class="enemy-icon">' + enemy.icon + '</div><div class="enemy-info"><div class="enemy-line"><strong>' + enemy.name + '</strong><span>' + enemy.hp + ' HP</span></div><p class="enemy-description">' + enemy.description + '</p><div class="enemy-hp"><i style="width:' + Math.max(0, enemy.hp / enemy.max * 100) + '%"></i></div></div></div>'; if (state.next) body += '<div class="outcome" ' + style + '>✦ <span>' + state.reward + '</span></div><div class="continue">' + renderAction(kind === 'boss' ? 'Claim the crown' : 'Enter the next room', kind === 'boss' ? 'The rift has been opened' : 'The path is still breathing', kind === 'boss' ? '♛' : '→', 'advance') + '</div>'; else body += '<div class="actions" ' + style + '><button class="combat-button" data-action="attack"><span class="action-icon">╱</span><strong>Strike</strong><small>1 focus</small></button><button class="combat-button" data-action="heavy"><span class="action-icon">♨</span><strong>Heavy</strong><small>2 focus</small></button><button class="combat-button" data-action="potion"><span class="action-icon">◆</span><strong>Tonic</strong><small>heal 30</small></button></div>'; body += renderLog(); } else if (kind === 'event') { body += '<p class="event-copy">' + state.eventText + '</p>'; if (state.next) body += '<div class="outcome" ' + style + '>✦ <span>The shrine has made its choice.</span></div><div class="continue">' + renderAction('Walk onward', 'The omen is behind you', '→', 'advance') + '</div>'; else body += '<div class="action-stack">' + state.choices.map(c => renderAction(c.title, c.detail, c.icon, 'event-' + c.key)).join('') + '</div>'; } else if (kind === 'rest') { body += '<p class="event-copy">' + state.eventText + '</p>'; body += state.next ? '<div class="outcome" ' + style + '>✦ <span>A little stronger.</span></div><div class="continue">' + renderAction('Leave the hollow', 'The path is waiting', '→', 'advance') + '</div>' : renderAction('Rest by the flame', 'Recover vitality and gain ward', '♨', 'rest'); } else { body += '<p class="event-copy">' + state.eventText + '</p>'; body += state.next ? '<div class="outcome" ' + style + '>✦ <span>' + state.reward + '</span></div><div class="continue">' + renderAction('Descend deeper', 'Keep what you found', '↘', 'advance') + '</div>' : renderAction('Open the vault', 'Gold, tonic, and a warding charm', '◇', 'treasure'); } return '<section class="panel" ' + style + '><div class="room-title-row"><div class="room-icon">' + meta.icon + '</div><div class="room-meta"><div class="room-badges"><span class="room-badge">' + meta.badge + '</span><span class="room-number">ROOM ' + state.room + '/' + state.maxRooms + '</span></div><h2 class="room-name">' + meta.title + '</h2><p class="room-subtitle">' + meta.subtitle + '</p></div></div>' + body + '</section>'; };
+    const renderRun = () => '<div class="shell run-screen"><header>' + renderHeader() + '</header>' + renderRoute() + renderRoom() + '<button class="abandon" data-action="abandon">Abandon this run</button></div>';
+    const renderEnd = victory => '<div class="shell end-screen ' + (victory ? '' : 'defeat') + '"><div><div class="end-icon">' + (victory ? '♛' : '☾') + '</div><h1>' + (victory ? 'THE RIFT REMEMBERS' : 'THE VEIL WINS') + '</h1><p>' + (victory ? 'You carried the Heart through three floors of impossible dark.' : 'Your run ends here. The next one starts with what you learned.') + '</p><div class="end-card"><div class="end-stat"><strong>' + state.floor + '</strong><small>FLOOR</small></div><div class="end-stat"><strong>' + state.gold + '</strong><small>GOLD</small></div><div class="end-stat"><strong>#' + state.run + '</strong><small>RUN</small></div></div></div><div class="end-actions"><button class="primary-button" data-action="start">Start another run</button><button class="abandon" data-action="abandon">Return to title</button></div></div>';
+    const howTo = () => { app.innerHTML = '<div class="shell title-screen"><div class="panel howto"><button class="abandon" data-action="abandon" style="margin:0 0 20px;text-align:left">← Back</button><h2>How to survive</h2><div class="rule"><div class="rule-icon">ϟ</div><div><strong>Spend focus wisely</strong><p>Basic attacks cost 1 focus. Heavy strikes cost 2 and hit hard.</p></div></div><div class="rule"><div class="rule-icon">♥</div><div><strong>Stay alive</strong><p>Potions heal 30 HP, but using one gives the enemy a turn.</p></div></div><div class="rule"><div class="rule-icon">⌁</div><div><strong>Read the route</strong><p>Each floor has a fight, an omen, a camp, and a relic vault.</p></div></div><div class="rule"><div class="rule-icon">♛</div><div><strong>Face the Heart</strong><p>On floor three, the first room is the crowned heart of the rift.</p></div></div></div></div>'; };
+    function render() { app.innerHTML = state.phase === 'title' ? renderTitle() : state.phase === 'run' ? renderRun() : renderEnd(state.phase === 'victory'); }
+    app.addEventListener('click', e => { const target = e.target.closest('[data-action]'); if (!target) return; const action = target.dataset.action; if (action === 'start') startRun(); else if (action === 'how') howTo(); else if (action === 'attack') attack(); else if (action === 'heavy') heavy(); else if (action === 'potion') potion(); else if (action === 'rest') rest(); else if (action === 'treasure') treasure(); else if (action === 'advance') advance(); else if (action === 'abandon') resetTitle(); else if (action === 'event-shrine') chooseEvent('shrine'); else if (action === 'event-gamble') chooseEvent('gamble'); });
+    render();
+  </script>
+</body>
+</html>
