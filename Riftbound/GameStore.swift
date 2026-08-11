@@ -279,7 +279,7 @@ final class GameStore: ObservableObject {
     func guardAction() {
         guard canAct else { return }
         startAnimation(.playerAttack)
-        feedback(.tap)
+        feedback(.ward)
         guardValue += 18
         addLog("身構えた。守り+18。", tone: .good)
         queueEnemyTurn()

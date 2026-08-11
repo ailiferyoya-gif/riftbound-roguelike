@@ -26,8 +26,8 @@ python -m http.server 8765
 
 ## iOS版
 
-`Riftbound.xcodeproj` はSwiftUI版のコア実装です。HP/MP戦闘、10主人公、永続ツリー、召喚、ショップ、深層・ウィークリー・エンドレスの状態を同期しています。生成PNG素材12点、攻撃アニメーション、システム効果音、触覚フィードバック、RIFT SIGNAL系のオリジナルUIも組み込んでいます。GitHub ActionsのmacOSランナーでiOS Simulator向けビルド成功を確認済みです。実機UI、VoiceOver、Reduce Motionの通し確認は実機またはSimulatorでの次工程です。
+`Riftbound.xcodeproj` はSwiftUI版のコア実装です。HP/MP戦闘、10主人公、永続ツリー、召喚、ショップ、深層・ウィークリー・エンドレスの状態を同期しています。生成PNG素材12点、攻撃アニメーション、ゲーム専用WAV効果音9種、触覚フィードバック、RIFT SIGNAL系のオリジナルUIも組み込んでいます。GitHub ActionsのmacOSランナーでiOS Simulator向けビルド成功を確認済みです。実機UI、VoiceOver、Reduce Motionの通し確認は実機またはSimulatorでの次工程です。
 
 ## 素材
 
-`assets/` に主人公・ウィスプ・沼喰らい・硝子騎士・灰翼・裂背・プリズムマンティス・虚無の告知者・虚ろの冠・星蝕ボス・鏡晶竜のドット素材と、画像生成した観測端末フレーム `rift-ui-frame.png` を収録しています。
+`assets/` に主人公・ウィスプ・沼喰らい・硝子騎士・灰翼・裂背・プリズムマンティス・虚無の告知者・虚ろの冠・星蝕ボス・鏡晶竜のドット素材と、画像生成した観測端末フレーム `rift-ui-frame.png` を収録しています。`assets/audio/` にはクリック、攻撃、スキル、防御、敵攻撃、回復、報酬、勝利、敗北の専用WAVを収録しています。
