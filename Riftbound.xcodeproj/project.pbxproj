@@ -25,6 +25,7 @@
 		A10000000000000000000019 /* enemy-void-herald.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* enemy-void-herald.png */; };
 		A10000000000000000000020 /* boss-astral.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* boss-astral.png */; };
 		A10000000000000000000021 /* boss-mirror-dragon.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* boss-mirror-dragon.png */; };
+		A10000000000000000000022 /* rift-ui-frame.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* rift-ui-frame.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		B10000000000000000000019 /* enemy-void-herald.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enemy-void-herald.png; sourceTree = "<group>"; };
 		B10000000000000000000020 /* boss-astral.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boss-astral.png; sourceTree = "<group>"; };
 		B10000000000000000000021 /* boss-mirror-dragon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boss-mirror-dragon.png; sourceTree = "<group>"; };
+		B10000000000000000000022 /* rift-ui-frame.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rift-ui-frame.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				B10000000000000000000019 /* enemy-void-herald.png */,
 				B10000000000000000000020 /* boss-astral.png */,
 				B10000000000000000000021 /* boss-mirror-dragon.png */,
+				B10000000000000000000022 /* rift-ui-frame.png */,
 			);
 			path = Riftbound;
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 				A10000000000000000000019 /* enemy-void-herald.png in Resources */,
 				A10000000000000000000020 /* boss-astral.png in Resources */,
 				A10000000000000000000021 /* boss-mirror-dragon.png in Resources */,
+				A10000000000000000000022 /* rift-ui-frame.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

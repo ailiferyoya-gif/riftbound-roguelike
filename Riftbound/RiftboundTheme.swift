@@ -19,6 +19,12 @@ struct RiftboundBackground: View {
     var body: some View {
         ZStack {
             RiftboundTheme.background
+            Image("rift-ui-frame")
+                .resizable()
+                .scaledToFill()
+                .opacity(0.3)
+                .blendMode(.screen)
+                .padding(8)
             Circle()
                 .fill(RiftboundTheme.lilac.opacity(0.12))
                 .frame(width: 280, height: 280)
