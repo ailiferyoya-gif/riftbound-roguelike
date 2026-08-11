@@ -48,7 +48,7 @@ final class RiftboundFeedback {
             return
         }
         if !audioConfigured {
-            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .game, options: [.mixWithOthers])
+            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
             try? AVAudioSession.sharedInstance().setActive(true)
             audioConfigured = true
         }
