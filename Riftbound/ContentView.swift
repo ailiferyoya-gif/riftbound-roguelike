@@ -47,7 +47,7 @@ struct TitleView: View {
                 HStack {
                     CapsuleLabel(text: "A POCKET ROGUELIKE RPG", color: RiftboundTheme.mint)
                     Spacer()
-                    Text("v0.5.3")
+                    Text("v0.5.4")
                         .font(.caption.monospaced())
                         .foregroundStyle(RiftboundTheme.muted)
                 }
@@ -171,7 +171,15 @@ struct HomeView: View {
                                 .foregroundStyle(game.homeTab == tab ? RiftboundTheme.text : RiftboundTheme.muted)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 9)
-                                .background(game.homeTab == tab ? RiftboundTheme.panelRaised : RiftboundTheme.panel.opacity(0.72), in: Capsule())
+                                .background(game.homeTab == tab ? RiftboundTheme.panelRaised : RiftboundTheme.panel.opacity(0.72), in: RiftCutCornerShape(cut: 8))
+                                .overlay(RiftCutCornerShape(cut: 8).stroke(game.homeTab == tab ? RiftboundTheme.cyan.opacity(0.42) : .white.opacity(0.06), lineWidth: 1))
+                                .overlay(alignment: .bottom) {
+                                    Rectangle()
+                                        .fill(RiftboundTheme.mint)
+                                        .frame(height: 2)
+                                        .padding(.horizontal, 10)
+                                        .opacity(game.homeTab == tab ? 1 : 0)
+                                }
                         }
                     }
                 }
@@ -225,7 +233,8 @@ struct HeroCard: View {
                         .font(.system(size: 23, weight: .bold))
                         .frame(width: 48, height: 48)
                         .foregroundStyle(selected ? RiftboundTheme.mint : RiftboundTheme.lilac)
-                        .background(RiftboundTheme.panelRaised, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                        .background(RiftboundTheme.panelRaised, in: RiftCutCornerShape(cut: 8))
+                        .overlay(RiftCutCornerShape(cut: 8).stroke(selected ? RiftboundTheme.mint.opacity(0.5) : .white.opacity(0.06), lineWidth: 1))
                     VStack(alignment: .leading, spacing: 3) {
                         HStack {
                             Text(hero.name).font(.headline.weight(.bold))
@@ -235,8 +244,13 @@ struct HeroCard: View {
                     }
                     Spacer()
                     Button(unlocked ? (selected ? "選択中" : "選ぶ") : "\(hero.cost)G") { game.selectHero(hero) }
-                        .buttonStyle(.bordered)
-                        .tint(selected ? RiftboundTheme.mint : RiftboundTheme.gold)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(selected ? RiftboundTheme.mint : RiftboundTheme.gold)
+                        .padding(.horizontal, 10)
+                        .frame(minHeight: 32)
+                        .background((selected ? RiftboundTheme.mint : RiftboundTheme.gold).opacity(0.12), in: RiftCutCornerShape(cut: 6))
+                        .overlay(RiftCutCornerShape(cut: 6).stroke((selected ? RiftboundTheme.mint : RiftboundTheme.gold).opacity(0.42), lineWidth: 1))
+                        .buttonStyle(.plain)
                         .disabled(!unlocked && game.profile.gold < hero.cost)
                 }
                 HStack(spacing: 12) {
@@ -254,7 +268,8 @@ struct HeroCard: View {
                                     .foregroundStyle(build == option ? RiftboundTheme.background : RiftboundTheme.muted)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 6)
-                                    .background(build == option ? RiftboundTheme.mint : RiftboundTheme.panelRaised, in: Capsule())
+                                    .background(build == option ? RiftboundTheme.mint.opacity(0.9) : RiftboundTheme.panelRaised, in: RiftCutCornerShape(cut: 5))
+                                    .overlay(RiftCutCornerShape(cut: 5).stroke(build == option ? RiftboundTheme.mint : .white.opacity(0.08), lineWidth: 1))
                             }
                         }
                     }
@@ -880,7 +895,8 @@ struct ChallengeButton: View {
                 Image(systemName: "chevron.right").foregroundStyle(tint)
             }
             .padding(13)
-            .background(RiftboundTheme.panelRaised, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(RiftboundTheme.panelRaised, in: RiftCutCornerShape(cut: 10))
+            .overlay(RiftCutCornerShape(cut: 10).stroke(.white.opacity(0.06), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -930,7 +946,11 @@ struct PrimaryWideButton: View {
             .foregroundStyle(RiftboundTheme.background)
             .padding(.horizontal, 17)
             .frame(height: 58)
-            .background(RiftboundTheme.text, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+            .background(
+                LinearGradient(colors: [RiftboundTheme.text, RiftboundTheme.mint.opacity(0.85)], startPoint: .leading, endPoint: .trailing),
+                in: RiftCutCornerShape(cut: 10)
+            )
+            .overlay(RiftCutCornerShape(cut: 10).stroke(RiftboundTheme.mint.opacity(0.35), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -953,7 +973,8 @@ struct SecondaryWideButton: View {
             .foregroundStyle(RiftboundTheme.text)
             .padding(.horizontal, 17)
             .frame(height: 52)
-            .background(RiftboundTheme.panel.opacity(0.92), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+            .background(RiftboundTheme.panel.opacity(0.92), in: RiftCutCornerShape(cut: 9))
+            .overlay(RiftCutCornerShape(cut: 9).stroke(RiftboundTheme.lilac.opacity(0.25), lineWidth: 1))
         }
         .buttonStyle(.plain)
     }

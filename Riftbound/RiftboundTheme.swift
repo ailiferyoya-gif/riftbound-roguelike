@@ -15,6 +15,25 @@ enum RiftboundTheme {
     static let cyan = Color(red: 0.31, green: 0.85, blue: 1.0)
 }
 
+struct RiftCutCornerShape: Shape {
+    var cut: CGFloat = 10
+
+    func path(in rect: CGRect) -> Path {
+        let c = min(cut, min(rect.width, rect.height) / 3)
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + c, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - c, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + c))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - c))
+        path.addLine(to: CGPoint(x: rect.maxX - c, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + c, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - c))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + c))
+        path.closeSubpath()
+        return path
+    }
+}
+
 struct RiftboundBackground: View {
     var body: some View {
         ZStack {
@@ -51,10 +70,10 @@ struct GlassPanel<Content: View>: View {
         content
             .padding(18)
             .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RiftCutCornerShape(cut: 12)
                     .fill(RiftboundTheme.panel.opacity(0.92))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        RiftCutCornerShape(cut: 12)
                             .stroke(.white.opacity(0.08), lineWidth: 1)
                     )
             )
@@ -245,7 +264,7 @@ struct ActionButton: View {
                     .font(.system(size: 16, weight: .bold))
                     .frame(width: 28, height: 28)
                     .foregroundStyle(isPrimary ? RiftboundTheme.background : tint)
-                    .background(isPrimary ? tint : tint.opacity(0.12), in: Circle())
+                    .background(isPrimary ? tint : tint.opacity(0.12), in: RiftCutCornerShape(cut: 6))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -261,10 +280,10 @@ struct ActionButton: View {
             }
             .padding(13)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RiftCutCornerShape(cut: 10)
                     .fill(isPrimary ? tint.opacity(0.18) : RiftboundTheme.panelRaised.opacity(0.72))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        RiftCutCornerShape(cut: 10)
                             .stroke(isPrimary ? tint.opacity(0.42) : .white.opacity(0.06), lineWidth: 1)
                     )
             )
