@@ -47,11 +47,14 @@ struct TitleView: View {
                 HStack {
                     CapsuleLabel(text: "A POCKET ROGUELIKE RPG", color: RiftboundTheme.mint)
                     Spacer()
-                    Text("v0.5.2")
+                    Text("v0.5.3")
                         .font(.caption.monospaced())
                         .foregroundStyle(RiftboundTheme.muted)
                 }
                 .padding(.top, 38)
+
+                RiftSignalView(caption: "ARCHIVE 00 · LISTENING")
+                    .padding(.top, 34)
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text("RIFT")
@@ -137,6 +140,8 @@ struct HomeView: View {
                     HomeStat(value: "\(game.profile.kills)", label: "討伐")
                     HomeStat(value: "\(game.profile.depth)", label: "深度")
                 }
+
+                RiftTelemetryCard(depth: game.profile.depth)
 
                 PrimaryWideButton(title: "\(game.selectedHero.name)で出撃する", icon: "arrow.up.right") {
                     game.startNewRun()
@@ -444,6 +449,7 @@ struct RunView: View {
                     Spacer()
                     Text("● \(game.cycleGold)G").font(.headline.weight(.bold)).foregroundStyle(RiftboundTheme.gold)
                 }
+                RunCommandlineView()
                 HStack(spacing: 8) {
                     Text("ROOM \(game.roomNumber) / \(game.route.count)")
                     Text(game.ruleText).lineLimit(1)
