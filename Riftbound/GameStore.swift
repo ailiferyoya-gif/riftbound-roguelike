@@ -32,6 +32,8 @@ final class GameStore: ObservableObject {
     @Published private(set) var hasResume = false
     @Published private(set) var combatAnimation: CombatAnimation = .idle
     @Published private(set) var isAnimating = false
+    @Published private(set) var combo = 0
+    @Published private(set) var comboBest = 0
     @Published var toast: String?
 
     private let profileKey = "riftbound-ios-profile-v5"
@@ -102,6 +104,8 @@ final class GameStore: ObservableObject {
         showNextButton = false
         combatAnimation = .idle
         isAnimating = false
+        combo = 0
+        comboBest = 0
         nextAttackBonus = 0
         discoveryBonus = profile.shopDiscovery
         profile.shopPotions = 0
@@ -147,6 +151,8 @@ final class GameStore: ObservableObject {
         hasResume = false
         combatAnimation = .idle
         isAnimating = false
+        combo = 0
+        comboBest = 0
         phase = .running
         addLog("前回のサイクルを安全な地点から再開した。", tone: .good)
     }
@@ -225,7 +231,8 @@ final class GameStore: ObservableObject {
         guard canAct, var enemy = currentEnemy else { return }
         startAnimation(.playerAttack)
         feedback(.attack)
-        var damage = attack + Int.random(in: 0...6) + nextAttackBonus
+        let resonanceBonus = registerCombo()
+        var damage = attack + Int.random(in: 0...6) + nextAttackBonus + resonanceBonus
         if relics.contains(where: { $0.id == "blood" }) { damage += 6 }
         nextAttackBonus = 0
         enemy.hp = max(0, enemy.hp - damage)
@@ -241,6 +248,7 @@ final class GameStore: ObservableObject {
         }
         startAnimation(.skill)
         feedback(.skill)
+        let resonanceBonus = registerCombo()
         mp -= skill.cost
         var damage: Int
         switch skill.id {
@@ -270,6 +278,7 @@ final class GameStore: ObservableObject {
         }
         if selectedBuild == .arcane { damage = Int(Double(damage) * 1.12) }
         if relics.contains(where: { $0.id == "ember" }) { damage += 8 }
+        damage += resonanceBonus
         enemy.hp = max(0, enemy.hp - damage)
         currentEnemy = enemy
         addLog("\(skill.name)。\(damage)ダメージ。", tone: .good)
@@ -486,6 +495,13 @@ final class GameStore: ObservableObject {
         phase == .running && !isAnimating && (currentRoom == .battle || currentRoom == .elite || currentRoom == .boss) && !showNextButton && currentEnemy != nil
     }
 
+    private func registerCombo() -> Int {
+        combo = min(9, combo + 1)
+        comboBest = max(comboBest, combo)
+        guard combo >= 3 else { return 0 }
+        return max(1, attack * (combo - 2) / 20)
+    }
+
     private func eventChoicesFor(branch: Int) -> [EventChoice] {
         switch branch {
         case 0:
@@ -532,6 +548,7 @@ final class GameStore: ObservableObject {
 
     private func performEnemyTurn() {
         guard let enemy = currentEnemy, enemy.hp > 0 else { return }
+        combo = 0
         startAnimation(.enemyAttack)
         feedback(.enemy)
         var rawDamage = Int.random(in: enemy.attack)

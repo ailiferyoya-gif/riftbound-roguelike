@@ -200,6 +200,46 @@ struct RunCommandlineView: View {
     }
 }
 
+struct RiftResonanceView: View {
+    @EnvironmentObject private var game: GameStore
+
+    private var rank: String {
+        if game.combo >= 7 { return "OVERCLOCK" }
+        if game.combo >= 4 { return "RESONANCE" }
+        return "CHARGE"
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text("RIFT RESONANCE")
+                .font(.caption2.weight(.black).monospaced())
+                .foregroundStyle(RiftboundTheme.muted)
+            Text(rank)
+                .font(.caption2.weight(.black).monospaced())
+                .foregroundStyle(RiftboundTheme.gold)
+            HStack(spacing: 3) {
+                ForEach(0..<7, id: \.self) { index in
+                    Capsule(style: .continuous)
+                        .fill(index < game.combo ? RiftboundTheme.mint : RiftboundTheme.panelRaised)
+                        .frame(maxWidth: .infinity, minHeight: 5)
+                }
+            }
+            Text("\(game.combo) / \(game.comboBest)")
+                .font(.caption2.weight(.bold).monospaced())
+                .foregroundStyle(RiftboundTheme.muted)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(
+            LinearGradient(colors: [RiftboundTheme.mint.opacity(0.1), RiftboundTheme.lilac.opacity(0.09)], startPoint: .leading, endPoint: .trailing),
+            in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+        )
+        .overlay(RoundedRectangle(cornerRadius: 9, style: .continuous).stroke(RiftboundTheme.mint.opacity(0.22), lineWidth: 1))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("リフト共鳴、コンボ\(game.combo)、ベスト\(game.comboBest)")
+    }
+}
+
 struct CapsuleLabel: View {
     let text: String
     let color: Color

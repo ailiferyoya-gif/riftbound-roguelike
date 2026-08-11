@@ -47,7 +47,7 @@ struct TitleView: View {
                 HStack {
                     CapsuleLabel(text: "A POCKET ROGUELIKE RPG", color: RiftboundTheme.mint)
                     Spacer()
-                    Text("v0.5.5")
+                    Text("v0.6.0")
                         .font(.caption.monospaced())
                         .foregroundStyle(RiftboundTheme.muted)
                 }
@@ -465,6 +465,7 @@ struct RunView: View {
                     Text("● \(game.cycleGold)G").font(.headline.weight(.bold)).foregroundStyle(RiftboundTheme.gold)
                 }
                 RunCommandlineView()
+                RiftResonanceView()
                 HStack(spacing: 8) {
                     Text("ROOM \(game.roomNumber) / \(game.route.count)")
                     Text(game.ruleText).lineLimit(1)
